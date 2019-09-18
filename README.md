@@ -11,7 +11,9 @@
 # 2. Zabbix Agent
 
 change zabbix-agent direct to zbx-srv.
+
 change ZBX_SERVER_HOST=zbx-prod.david.internal. at /opt/zabbix-agent/.env file.
+
 it must use FQDN.
 
 ```console
@@ -23,6 +25,7 @@ it must use FQDN.
 ```
 
 Finally, got to setup this host in web gui of zabbix srv.
+
 Please remember setup with 'Template AX App Docker PASSIVE' , 'Template OS Linux'.
 
 # Zabbix Web GUI - According Zabbix documentation: Admin/zabbix
