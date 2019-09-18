@@ -9,9 +9,11 @@
 ```
 
 # 2. Zabbix Agent
-# change zabbix-agent direct to zbx-srv.
-# change ZBX_SERVER_HOST=zbx-prod.david.internal. at /opt/zabbix-agent/.env file.
-# it must use FQDN.
+
+change zabbix-agent direct to zbx-srv.
+change ZBX_SERVER_HOST=zbx-prod.david.internal. at /opt/zabbix-agent/.env file.
+it must use FQDN.
+
 ```console
 # sed -i 's|zbx-prod.david.internal.|<new zbx-srv>|g' /opt/zabbix-agent/.env
 # mv zabbix-agent /opt/

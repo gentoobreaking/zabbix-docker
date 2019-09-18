@@ -1,0 +1,5 @@
+
+# --- for tcp-discovery.sh in docker --- # 
+cp -p /usr/bin/nmap /usr/bin/nmap_david
+chmod 4755 /usr/bin/nmap_david
+

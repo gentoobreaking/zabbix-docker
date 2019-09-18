@@ -1,0 +1,54 @@
+
+/opt/zabbix-docker/zbx_env/var/lib/zabbix/modules/check_ssl_urls.sh
+-------------------------------------------------------------------------------------------------
+#!/bin/bash
+
+#curl -skIf https://www.alastorb12.net/zh/Contents/GameIcon/Slot/TG/TheChampions.jpg|grep "200 OK"
+export url='https://www.alastorb12.net/zh/Contents/GameIcon/Slot/TG/TheChampions.jpg'
+
+CHECK_SSL_URL()
+{
+#url='https://www.alastorb12.net/zh/Contents/GameIcon/Slot/TG/TheChampions.jpg'
+export url="$1"
+if ( curl -o/dev/null -skfI "$url" ); then
+  echo "URL exists"
+else
+  echo "URL does not exist"
+fi
+}
+
+CHECK_SSL_URL "$1"
+-------------------------------------------------------------------------------------------------
+
+/opt/zabbix-docker/zbx_env/etc/zabbix/zabbix_agentd.d/image_url.conf
+-------------------------------------------------------------------------------------------------
+Timeout=5
+UserParameter=check_image_url[*],sudo /var/lib/zabbix/modules/check_ssl_urls.sh $1
+-------------------------------------------------------------------------------------------------
+
+cd /opt/zabbix-docker
+vim docker-compose.yaml (add zbx_net_frontend into zabbix-agent)
+docker-compose -f docker-compose.yaml up -d zabbix-agent
+
+vim /opt/zabbix-docker/tmp_script.sh
+-------------------------------------------------------------------------------------------------
+#!/bin/bash
+
+docker exec -t zbx-agent /bin/bash -c "apk update"
+docker exec -t zbx-agent /bin/bash -c "echo http://dl-cdn.alpinelinux.org/alpine/latest-stable/main >> /etc/apk/repositories"
+docker exec -t zbx-agent /bin/bash -c "echo http://dl-cdn.alpinelinux.org/alpine/latest-stable/community >> /etc/apk/repositories"
+docker exec -t zbx-agent /bin/bash -c "apk update ; apk add -u apk-tools"
+docker exec -t zbx-agent /bin/bash -c "apk --no-cache add python3 py-simplejson docker py-pip;pip install docker-py"
+docker exec -t zbx-agent /bin/bash -c "apk --no-cache add shadow sudo curl && usermod -a -G docker zabbix"
+docker exec -t zbx-agent /bin/bash -c "echo 'zabbix ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+-------------------------------------------------------------------------------------------------
+chmod 755 /opt/zabbix-docker/tmp_script.sh
+/opt/zabbix-docker/tmp_script.sh
+
+docker exec -it zbx-agent /bin/bash -c "/var/lib/zabbix/modules/check_ssl_urls.sh www.google.com"
+
+
+docker exec -it zbx-srv /bin/bash
+zabbix_get -s zbx-agent -p 10050 -k 'check_image_url[www.google.com]'
+
+
